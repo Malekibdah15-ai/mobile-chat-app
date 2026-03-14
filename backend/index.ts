@@ -1,8 +1,21 @@
 import app from "./src/app";
 import { connectDb } from "./src/config/database";
+import { createServer } from "http";
+import { initializeSocket } from "./src/utils/socket";
 
-const Port = process.env.PORT 
+const PORT = process.env.PORT || 3000;
 
-connectDb().then(() => {app.listen(Port,()=>
-     {console.log("Server is runing ", Port)});
-})
+const httpServer = createServer(app);
+
+initializeSocket(httpServer);
+
+connectDb()
+  .then(() => {
+    httpServer.listen(PORT, () => {
+      console.log("Server is running on PORT:", PORT);
+    });
+  })
+  .catch((error: any) => {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  })
