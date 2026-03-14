@@ -33,8 +33,21 @@ export async function getOrCreateChat(req:AuthRequest, res:Response, next: NextF
 
         const userId = req.userId;
         const {participantId} = req.params
+    if (!participantId) {
+      res.status(400).json({ message: "Participant ID is required" });
+      return;
+    }
+
+    // if (!Types.ObjectId.isValid(participantId)) {
+    //   return res.status(400).json({ message: "Invalid participant ID" });
+    // }
+
+    if (userId === participantId) {
+      res.status(400).json({ message: "Cannot create chat with yourself" });
+      return;
+    }
         
-    let chat = await Chat.findOne({
+     let chat = await Chat.findOne({
         participants: {$all: [userId, participantId]}
     }).populate("participants", "name email avatar")
       .populate("lastMessage")

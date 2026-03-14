@@ -15,6 +15,7 @@ import { Message } from "../models/Message";
         const messages = await Message.find({chat:chatId})
         .populate("sender", "name email avatar")
         .sort({createdAt: 1})
+        res.json(messages)
     }catch(error){
         res.status(500)
         next(error)
