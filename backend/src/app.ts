@@ -1,4 +1,5 @@
 import express from "express"
+import path from "path"
 import { clerkMiddleware } from '@clerk/express'
 import authRoutes from "./routes/authRoutes"
 import chatRoutes from "./routes/chatRoutes"
@@ -20,5 +21,13 @@ app.use("/api/messages", messageRoutes)
 app.use("/api/users", userRoutes)
 
 app.use(errorHandler)
+
+if(process.env.NODE_ENV == "production"){
+    app.use(express.static(path.join(__dirname,"../../web/dist")))
+
+    app.get("/{*any}", (_, res) =>{
+        res.sendFile(path.join(__dirname, "../../web/dist/index.html"))
+    })
+}
 
 export default app
