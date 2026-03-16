@@ -1,31 +1,27 @@
-# use the official Bun image
+# Use the official Bun image
 FROM oven/bun:latest
 
 WORKDIR /app
 
-# build web frontend
-WORKDIR /app/web
-COPY web/package.json web/bun.lock* ./
-RUN bun install --frozen-lockfile
-COPY web/ ./
-
+# Build web frontend
+COPY web/package.json web/bun.lock* ./web/
+RUN bun install --cwd ./web --frozen-lockfile
+COPY web/ ./web/
 ARG VITE_CLERK_PUBLISHABLE_KEY
 ENV VITE_CLERK_PUBLISHABLE_KEY=$VITE_CLERK_PUBLISHABLE_KEY
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
-RUN bun run build
+RUN bun --cwd ./web run build
 
-# install backend dependencies
-WORKDIR /app/backend
-COPY backend/package.json backend/bun.lock* ./
-RUN bun install --frozen-lockfile
-COPY backend/ ./
+# Install backend dependencies
+COPY backend/package.json backend/bun.lock* ./backend/
+RUN bun install --cwd ./backend --frozen-lockfile
+COPY backend/ ./backend/
 
-# expose port
+# Expose port
 EXPOSE 3000
-# set non-sensitive defaults 
 ENV PORT=3000
 ENV NODE_ENV=production
 
-# start the application
-CMD ["bun", "index.ts"]
+# Start backend
+CMD ["bun", "--cwd", "./backend", "index.ts"]
