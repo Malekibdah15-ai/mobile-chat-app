@@ -7,7 +7,7 @@ const TapsLayout = () => {
     if (!isLoaded) {
       return null
     }
-    if (isSignedIn) {
+    if (!isSignedIn) {
       return <Redirect href={"/(auth)"} />
     }
   return (
