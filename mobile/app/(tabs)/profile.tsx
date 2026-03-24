@@ -7,7 +7,7 @@ const profile = () => {
       <ScrollView className={"bg-surface"}
       contentInsetAdjustmentBehavior='automatic'
       >
-        <Text>Chats Tab</Text>
+        <Text>profile</Text>
         
       </ScrollView>
     )

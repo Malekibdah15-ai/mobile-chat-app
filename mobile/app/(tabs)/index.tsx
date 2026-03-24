@@ -1,5 +1,6 @@
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView,Button } from 'react-native'
 import React from 'react'
+import * as Sentry from "@sentry/react-native"
 
 
 const ChatsTab = () => {
@@ -8,6 +9,8 @@ const ChatsTab = () => {
     contentInsetAdjustmentBehavior='automatic'
     >
       <Text>Chats Tab</Text>
+
+      <Button title='Try!' onPress={ () => { Sentry.captureException(new Error('First error')) }}/>
       
     </ScrollView>
   )
