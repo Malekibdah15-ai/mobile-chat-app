@@ -5,7 +5,10 @@ import { formatDistanceToNow } from "date-fns";
 import { useSocketStore } from "@/lib/socket";
 
 const ChatItem = ({ chat, onPress }: { chat: Chat; onPress: () => void }) => {
-  const participant = chat.participant;
+  const participant = chat?.participant;
+  if (!participant || !participant._id) {
+    return null; 
+  }
 
   const { onlineUsers, typingUsers, unreadChats } = useSocketStore();
 
@@ -29,7 +32,7 @@ const ChatItem = ({ chat, onPress }: { chat: Chat; onPress: () => void }) => {
           <Text
             className={`text-base font-medium ${hasUnread ? "text-primary" : "text-foreground"}`}
           >
-            {participant.name}
+            {participant.name || "Unknowon User"}
           </Text>
 
           <View className="flex-row items-center gap-2">
