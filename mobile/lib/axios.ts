@@ -1,11 +1,11 @@
-import axios from "axios"
-import { useAuth } from "@clerk/clerk-expo"
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-expo";
 import * as Sentry from "@sentry/react-native";
 import { useCallback } from "react";
 
 const API_URL = "https://mobile-chat-app-mj4m9.sevalla.app/api"
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_URL,
   headers: { "Content-Type": "application/json" },
 });

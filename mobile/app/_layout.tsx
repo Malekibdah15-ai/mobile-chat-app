@@ -6,6 +6,7 @@ import { tokenCache } from '@clerk/clerk-expo/token-cache'
 import AuthSync from "@/components/AuthSync";
 import { StatusBar } from "expo-status-bar";
 import * as Sentry from '@sentry/react-native';
+import SocketConnection from "@/components/SocketConnection";
 
 Sentry.init({
   dsn: 'https://c34aeeefd5062d0d85c55a3872314622@o4510944091570176.ingest.us.sentry.io/4511068576808960',
@@ -36,6 +37,7 @@ export default Sentry.wrap(function RootLayout() {
     <ClerkProvider tokenCache={tokenCache}>
     <QueryClientProvider client={queryClient}>
       <AuthSync/>
+      <SocketConnection/>
       <StatusBar style="light"/>
       <Stack screenOptions={{headerShown: false, contentStyle: { backgroundColor: "#0D0D0F" }}} >
         <Stack.Screen name="(auth)" options={{ animation: "fade" }}/>
