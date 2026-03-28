@@ -36,20 +36,27 @@ export async function getChats(req: AuthRequest, res: Response, next: NextFuncti
   }
 }
 
+
 export async function getOrCreateChat(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const userId = req.userId;
-    // Fix: Cast to string to satisfy TS for Mongoose/Types.ObjectId
     const participantId = req.params.participantId as string;
 
-    if (!participantId || !Types.ObjectId.isValid(participantId)) {
-      return res.status(400).json({ message: "Invalid or missing participant ID" });
+    if (!participantId) {
+      res.status(400).json({ message: "Participant ID is required" });
+      return;
+    }
+
+    if (!Types.ObjectId.isValid(participantId)) {
+      return res.status(400).json({ message: "Invalid participant ID" });
     }
 
     if (userId === participantId) {
-      return res.status(400).json({ message: "Cannot create chat with yourself" });
+      res.status(400).json({ message: "Cannot create chat with yourself" });
+      return;
     }
 
+    // check if chat already exists
     let chat = await Chat.findOne({
       participants: { $all: [userId, participantId] },
     })
@@ -59,24 +66,23 @@ export async function getOrCreateChat(req: AuthRequest, res: Response, next: Nex
     if (!chat) {
       const newChat = new Chat({ participants: [userId, participantId] });
       await newChat.save();
-      // Use execPopulate or a fresh find to ensure everything is loaded correctly
-      chat = await Chat.findById(newChat._id)
-        .populate("participants", "name email avatar");
+      chat = await newChat.populate("participants", "name email avatar");
     }
 
-    // Safety check for participant extraction
-    const otherParticipant = chat?.participants?.find(
-      (p: any) => p._id.toString() !== userId?.toString()
-    );
+    const otherParticipant = chat.participants.find((p: any) => p._id.toString() !== userId);
 
     res.json({
-      _id: chat!._id,
+      _id: chat._id,
       participant: otherParticipant ?? null,
-      lastMessage: chat!.lastMessage,
-      lastMessageAt: chat!.lastMessageAt,
-      createdAt: chat!.createdAt,
+      lastMessage: chat.lastMessage,
+      lastMessageAt: chat.lastMessageAt,
+      createdAt: chat.createdAt,
     });
   } catch (error) {
+    res.status(500);
     next(error);
   }
 }
+
+
+
