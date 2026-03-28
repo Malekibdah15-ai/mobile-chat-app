@@ -23,24 +23,37 @@ const NewChatScreen = () => {
   });
 
   const handleUserSelect = (user: User) => {
-    getOrCreateChat(user._id, {
-      onSuccess: (chat) => {
-        router.dismiss(); // go -1
+  getOrCreateChat(user._id, {
+    onSuccess: (chat) => {
+      // 1. ADD THIS LOG: See exactly what the backend sent back
+      console.log("✅ Chat Created/Found:", JSON.stringify(chat, null, 2));
 
-        setTimeout(() => {
-          router.push({
-            pathname: "/chat/[id]",
-            params: {
-              id: chat._id,
-              participantId: chat.participant._id,
-              name: chat.participant.name,
-              avatar: chat.participant.avatar,
-            },
-          });
-        }, 100);
-      },
-    });
-  };
+      // 2. CHECK: If participant is missing, the backend logic failed
+      if (!chat?.participant?._id) {
+        console.error("❌ ERROR: Backend returned a chat without a populated participant!");
+        alert("Could not start chat: Backend data error.");
+        return;
+      }
+
+      router.dismiss();
+
+      setTimeout(() => {
+        router.push({
+          pathname: "/chat/[id]",
+          params: {
+            id: chat._id,
+            participantId: chat.participant._id, // This was the crashing line
+            name: chat.participant.name,
+            avatar: chat.participant.avatar,
+          },
+        });
+      }, 100);
+    },
+    onError: (error) => {
+      console.error("❌ Mutation failed:", error);
+    }
+  });
+};
 
   return (
     <SafeAreaView className="flex-1 bg-black" edges={["top"]}>
