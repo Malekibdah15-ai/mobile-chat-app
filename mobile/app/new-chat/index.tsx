@@ -24,24 +24,40 @@ const NewChatScreen = () => {
   });
 
   const handleUserSelect = (user: User) => {
-    getOrCreateChat(user._id, {
-      onSuccess: (chat) => {
-        router.dismiss(); // go -1
+  getOrCreateChat(user._id, {
+    onSuccess: (chat: any) => {
+      // 1. PROJECT DATA SAFETY: Look for the ID in both possible places
+      const pId = chat?.participant?._id || chat?.participants?._id || chat?.participants?.[0]?._id;
+      const pName = chat?.participant?.name || chat?.participants?.name || user.name;
+      const pAvatar = chat?.participant?.avatar || chat?.participants?.avatar || user.avatar;
 
-        setTimeout(() => {
-          router.push({
-            pathname: "/chat/[id]",
-            params: {
-              id: chat._id,
-              participantId: chat.participant._id,
-              name: chat.participant.name,
-              avatar: chat.participant.avatar,
-            },
-          });
-        }, 100);
-      },
-    });
-  };
+      // 2. LOG THE TRUTH: This will tell us EXACTLY what the server sent
+      console.log("📡 SERVER DATA:", JSON.stringify(chat, null, 2));
+
+      if (!pId) {
+        console.error("❌ STALEMATE: The server sent NO ID. Check Sevalla logs.");
+        return;
+      }
+
+      router.dismiss();
+
+      setTimeout(() => {
+        router.push({
+          pathname: "/chat/[id]",
+          params: {
+            id: chat._id,
+            participantId: pId, // Using our safe variable
+            name: pName,
+            avatar: pAvatar,
+          },
+        });
+      }, 100);
+    },
+    onError: (err) => {
+      console.error("❌ API ERROR:", err);
+    }
+  });
+};
 
   return (
     <SafeAreaView className="flex-1 bg-black" edges={["top"]}>
