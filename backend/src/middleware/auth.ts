@@ -19,9 +19,9 @@ export const protectRoute = [
           {
             $setOnInsert: {
               clerkId,
-              name: sessionClaims?.fullName || "User",
-              email: sessionClaims?.email || "",
-              avatar: sessionClaims?.imageUrl || "",
+              name: "User",
+              email: `${clerkId}@placeholder.com`,
+              avatar: "",
             }
           },
           { upsert: true, new: true }
