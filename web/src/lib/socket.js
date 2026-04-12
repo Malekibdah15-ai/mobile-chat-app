@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.VITE_API_URL;
+const SOCKET_URL = "https://mobile-chat-app-mj4m9.sevalla.app"
 
 export const useSocketStore = create((set, get) => ({
   socket: null,
