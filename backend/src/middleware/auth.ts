@@ -12,10 +12,20 @@ export const protectRoute = [
     async(req: AuthRequest, res: Response, next: NextFunction)=>{
 
     try{
-        const {userId: clerkId} = getAuth(req)
+        const {userId: clerkId, sessionClaims} = getAuth(req)
 
-        const user = await User.findOne({clerkId})
-        if(!user) return res.status(404).json({Message: "User not found"})
+        const user = await User.findOneAndUpdate(
+          { clerkId },
+          {
+            $setOnInsert: {
+              clerkId,
+              name: sessionClaims?.fullName || "User",
+              email: sessionClaims?.email || "",
+              avatar: sessionClaims?.imageUrl || "",
+            }
+          },
+          { upsert: true, new: true }
+        )
 
         req.userId = user._id.toString();
         next()
