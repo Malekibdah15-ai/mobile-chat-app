@@ -1,15 +1,13 @@
-import axios from "axios"
+import axios from "axios";
 
-
-const API_URL = "https://mobile-chat-app-mj4m9.sevalla.app/api"
-if (!API_URL) {
+const apiUrl = import.meta.env.VITE_API_URL;
+if (!apiUrl) {
   console.error("VITE_API_URL environment variable is not set");
 }
 
-
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: import.meta.env.VITE_API_URL + "/api",
   withCredentials: true,
 });
 
-export default api
+export default api;
