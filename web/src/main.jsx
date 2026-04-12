@@ -5,7 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import {BrowserRouter} from "react-router"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "pk_test_ZGFzaGluZy1jaXZldC04MS5jbGVyay5hY2NvdW50cy5kZXYk";
 const queryClient = new QueryClient()
 createRoot(document.getElementById('root')).render(
   <StrictMode>
